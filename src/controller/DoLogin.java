@@ -1,8 +1,6 @@
 package controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -20,47 +18,50 @@ import service.CustomerService;
 @WebServlet("/doLogin")
 public class DoLogin extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public DoLogin() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String customerId = request.getParameter("customerId");
-		
-		// Perform business logic. Return a bean as a result.
-		
-		CustomerService service = new CustomerService();
-		Customer customer = service.findCustomer(customerId);
-		request.setAttribute("customer", customer);
-		
-		// We can iterate over lists using forEach in JSTL
-		List<Customer> customers = new ArrayList<>();
-		customers.add(new Customer("id006", "kim", "kim@hansung.ac.kr"));
-		customers.add(new Customer("id007", "Lee", "Lee@hansung.ac.kr"));
-		customers.add(new Customer("id008", "Park", "Park@hansung.ac.kr"));
-		
-		request.setAttribute("customerList", customers);
-		
-		String page;
-		
-		if(customer == null)
-			page = "/view/error.jsp";
-		else
-			page = "/view/success.jsp"; 
-		
-		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
-		dispatcher.forward(request, response);
-		
+	public DoLogin() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// loginForm.jsp customerId password
+		//사용자가 form 에 아이디와 비밀번호를 입력한 것을 가져온다.
+		//사용자가 입력할때마다 생기는 request, response 객체다.
+		request.setCharacterEncoding("utf-8");
+		
+		
+		String customerId = request.getParameter("customerId"); //실제로 아이디를 가져오는 것
+		String password = request.getParameter("password");
+		// Perform business logic. Return a bean as a result.
 
+		CustomerService service = (CustomerService) CustomerService.getInstance();
+		Customer customer = service.login(customerId, password);
+		request.setAttribute("customer", customer); //"request객체에 customer 키값에 customer value값이 들어가서
+		//success.jsp 에서 사용할수 있다.
+
+		String page;
+
+		if(customer == null) {
+			page = "view/loginFail.jsp";
+			request.setAttribute("customer", customerId);
+		}else {
+			page = "/view/loginSuccess.jsp";
+			
+			 //"request객체에 customer 키값에 customer value값이 들어가서
+			//success.jsp 에서 사용할수 있다.
+		}
+		RequestDispatcher dispatcher = request.getRequestDispatcher(page);
+		dispatcher.forward(request, response);
+
+	}
 
 }

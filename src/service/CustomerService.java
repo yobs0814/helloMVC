@@ -1,7 +1,10 @@
 package service;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+
+import java.util.Set;
 
 import model.Customer;
 
@@ -9,28 +12,34 @@ public class CustomerService {
 
 	private Map<String, Customer> customers;
 
-	public CustomerService() {
+	private static final CustomerService instance = new CustomerService();
+
+	private CustomerService() {
 		customers = new HashMap<String, Customer>();
 
-		addCustomer(new Customer("id001", "Alice", "alice.hansung.ac.kr"));
-		addCustomer(new Customer("id002", "Bob", "bob.hansung.ac.kr"));
-		addCustomer(new Customer("id003", "Charlie", "charlie.hansung.ac.kr"));
-		addCustomer(new Customer("id004", "David", "david.hansung.ac.kr"));
-		addCustomer(new Customer("id005", "Trudy", "trudy.hansung.ac.kr"));
+	}
+
+	public static CustomerService getInstance() {
+		return instance;
 	}
 
 	public void addCustomer(Customer customer) {
-		customers.put(customer.getId(), customer);
+		customers.put(customer.getId(), customer);// (key, value)저장
 
 	}
 
-	public Customer findCustomer(String id)
-	{
-		if(id != null)
-			return (customers.get(id.toLowerCase()));
+	public Customer findCustomer(String id) {
+		return (customers.get(id.toLowerCase()));
+	}
+
+	public Customer login(String id, String pw) {
+		Customer customer = findCustomer(id);
+
+		if (customer.getPassword().equals(pw))
+			return customer;
 		else
 			return null;
-				
+
 	}
 
 }
